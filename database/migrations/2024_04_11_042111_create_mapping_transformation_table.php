@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Mapping;
-use App\Models\Service;
+use App\Models\Transformation;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,9 +12,9 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('transformation_mapping', function (Blueprint $table) {
+        Schema::create('mapping_transformation', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Service::class);
+            $table->foreignIdFor(Transformation::class);
             $table->foreignIdFor(Mapping::class);
             $table->timestamps();
             $table->softDeletes();
