@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Application;
 use App\Models\Service;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -17,7 +18,12 @@ class ServiceFactory extends Factory
      */
     public function definition(): array
     {
-        return [//
+        return [
+            'slug' => $this->faker->slug,
+            'application_origin_id' => Application::factory(),
+            'application_destination_id' => Application::factory(),
+            'endpoint_parameters' => [],
+            'callback_parameters' => [],
         ];
     }
 }
