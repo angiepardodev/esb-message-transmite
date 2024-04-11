@@ -100,42 +100,148 @@ class Json extends Base
     const RANDOM_FLOAT = 'randomFloat';
     const OBJECT = 'object';
     
+    const ALLOW_ALL = [
+        self::RANDOM_LETTER,
+        self::WORD,
+        self::WORDS,
+        self::SENTENCE,
+        self::PARAGRAPH,
+        self::TEXT,
+        self::UNIX_TIME,
+        self::DATE_TIME,
+        self::DATE_TIME_AD,
+        self::ISO8601,
+        self::DATE,
+        self::TIME,
+        self::DATE_TIME_BETWEEN,
+        self::DATE_TIME_IN_INTERVAL,
+        self::DATE_TIME_THIS_CENTURY,
+        self::DATE_TIME_THIS_DECADE,
+        self::DATE_TIME_THIS_YEAR,
+        self::DATE_TIME_THIS_MONTH,
+        self::AM_PM,
+        self::DAY_OF_MONTH,
+        self::DAY_OF_WEEK,
+        self::MONTH_NAME,
+        self::YEAR,
+        self::CENTURY,
+        self::TIMEZONE,
+        self::SAFE_EMAIL,
+        self::EMAIL,
+        self::FREE_EMAIL,
+        self::COMPANY_EMAIL,
+        self::FREE_EMAIL_DOMAIN,
+        self::USER_NAME,
+        self::PASSWORD,
+        self::DOMAIN_NAME,
+        self::DOMAIN_WORD,
+        self::TLD,
+        self::URL,
+        self::SLUG,
+        self::IPV4,
+        self::LOCAL_IPV4,
+        self::IPV6,
+        self::MAC_ADDRESS,
+        self::USER_AGENT,
+        self::CHROME,
+        self::FIREFOX,
+        self::SAFARI,
+        self::OPERA,
+        self::INTERNET_EXPLORER,
+        self::MS_EDGE,
+        self::CREDIT_CARD_TYPE,
+        self::CREDIT_CARD_NUMBER,
+        self::CREDIT_CARD_EXPIRATION_DATE,
+        self::CREDIT_CARD_EXPIRATION_DATE_STRING,
+        self::CREDIT_CARD_DETAILS,
+        self::IBAN,
+        self::SWIFT_BIC_NUMBER,
+        self::HEX_COLOR,
+        self::SAFE_HEX_COLOR,
+        self::RGB_COLOR_AS_ARRAY,
+        self::RGBA_CSS_COLOR,
+        self::RGB_CSS_COLOR,
+        self::SAFE_COLOR_NAME,
+        self::COLOR_NAME,
+        self::HSL_COLOR,
+        self::HSL_COLOR_AS_ARRAY,
+        self::MIME_TYPE,
+        self::FILE_EXTENSION,
+        self::UUID,
+        self::EAN13,
+        self::EAN8,
+        self::ISBN10,
+        self::ISBN13,
+        self::ASCIIFY,
+        self::BOTHIFY,
+        self::BOOLEAN,
+        self::MD5,
+        self::SHA1,
+        self::SHA256,
+        self::LOCALE,
+        self::COUNTRY,
+        self::COUNTRY_CODE,
+        self::COUNTRY_ISO_ALPHA3,
+        self::LANGUAGE_CODE,
+        self::CURRENCY_CODE,
+        self::EMOJI,
+        self::RANDOM_HTML,
+        self::SEMVER,
+        self::RANDOM_NUMBER,
+        self::RANDOM_FLOAT,
+        self::OBJECT,
+    ];
+    
     /**
      * Generate data random to JSON format.
      *
-     * @param  array|null  $allows  An optional array of allowed keys; By default it allows all formatters.
-     * @param  array|null  $denies  An optional array of denied keys; By default, it does not deny any formatters.
+     * @param  array  $allows  An optional array of allowed keys; By default it allows all formatters.
+     * @param  array  $denies  An optional array of denied keys; By default, it does not deny any formatters.
      * @param  int  $maxDeep  An optional parameter to determine the maximum depth while encoding nested data.
      *
      * @return string The JSON-encoded data.
      */
-    public function json(array $allows = null, array $denies = null, int $maxDeep = 1): string
+    public function json(array $allows = self::ALLOW_ALL, array $denies = [], int $maxDeep = 1): string
     {
-        return json_encode($this->createDataRandom($allows ?? [], $denies ?? [], $maxDeep));
+        $variety = fn() => $this->jsonVariety($allows, $denies);
+        $closures = array_fill(0, 9, $variety);
+        
+        if (in_array(self::OBJECT, $denies ?? [])) {
+            $closures[] = $variety;
+        } elseif (empty($allows) || in_array(self::OBJECT, $allows)) {
+            $closures[] = fn() => $this->jsonObject($allows, $denies, $maxDeep);
+        }
+        
+        $closure = $this->generator->randomElement($closures);
+        
+        return $closure();
     }
     
     /**
      * Returns a JSON representation of an object.
      *
-     * @param  int  $maxDeep  The maximum depth of nested objects to include in the JSON.
+     * @param  array  $allows  An optional array of allowed keys; By default it allows all formatters.
+     * @param  array  $denies  An optional array of denied keys; By default, it does not deny any formatters.
+     * @param  int  $maxDeep  An optional parameter to determine the maximum depth while encoding nested data.
      *
-     * @return string The JSON representation of the object.
+     * @return string The JSON-encoded string.
      */
-    public function jsonObject(int $maxDeep = 1): string
+    public function jsonObject(array $allows = self::ALLOW_ALL, array $denies = [], int $maxDeep = 1): string
     {
-        return $this->json(allows: [self::OBJECT], maxDeep: $maxDeep);
+        return json_encode($this->createArrayAssoc($allows, $denies, $maxDeep));
     }
     
     /**
      * Returns a JSON representation of a variety of data types.
      *
-     * @param  int  $maxDeep  The maximum depth of nested objects to include in the JSON.
+     * @param  array  $allows  An optional array of allowed keys; By default it allows all formatters.
+     * @param  array  $denies  An optional array of denied keys; By default, it does not deny any formatters.
      *
      * @return string The JSON representation of the data.
      */
-    public function jsonVariety(int $maxDeep = 1): string
+    public function jsonVariety(array $allows = self::ALLOW_ALL, array $denies = []): string
     {
-        return $this->json(maxDeep: $maxDeep);
+        return json_encode($this->createDataRandom($allows, $denies));
     }
     
     protected function createArrayAssoc(array $allows, array $denies, int $maxDeep): array
@@ -144,25 +250,28 @@ class Json extends Base
         $range = mt_rand(1, 5);
         $array = [];
         for ($i = 0; $i < $range; $i++) {
-            $array[$this->generator->word] = $this->createDataRandom($allows, $denies, $maxDeep);
+            $data = mt_rand(1, 5) === 1
+                ? $this->createArrayAssoc($allows, $denies, $maxDeep)
+                : $this->createDataRandom(
+                    $allows,
+                    $denies
+                );
+            
+            $array[$this->generator->word] = $data;
         }
         return $array;
     }
     
-    protected function createDataRandom(array $allows, array $denies, int $maxDeep)
+    protected function createDataRandom(array $allows, array $denies)
     {
-        $generators = $allows ? Arr::only($this->getGeneratorFunctions(), $allows) : $this->getGeneratorFunctions();
+        $allGenerators = $this->getGeneratorFunctions();
+        $generators = Arr::only($allGenerators, $allows) ?: $allGenerators;
         
         if ($denies) {
             $generators = Arr::except($generators, $denies);
         }
         
-        if (array_key_exists(self::OBJECT, $generators)) {
-            $generators[] = fn() => $this->createArrayAssoc($allows, $denies, $maxDeep);
-        }
-        
         $generators = array_values($generators);
-        
         return $generators[mt_rand(0, count($generators) - 1)]();
     }
     
