@@ -4,7 +4,7 @@ namespace App\Core;
 
 namespace App\Core;
 
-class ParsedData
+class Signal
 {
     private mixed $raw;
     private array $parsed;

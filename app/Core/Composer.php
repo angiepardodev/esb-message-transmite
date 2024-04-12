@@ -7,7 +7,7 @@ use Illuminate\Http\Resources\MissingValue;
 
 class Composer
 {
-    public function processThrough(ParsedData $source, Service $service): ParsedData
+    public function processThrough(Signal $source, Service $service): Signal
     {
         $transformations = $service->transformations()->get();
         
