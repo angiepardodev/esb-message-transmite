@@ -2,9 +2,10 @@
 
 namespace App\Imports;
 
+use App\Contracts\SignalFormatImport;
 use App\Core\Signal;
 
-class SignalJsonImport
+class SignalJsonImport implements SignalFormatImport
 {
     public function import(string $data): Signal
     {
