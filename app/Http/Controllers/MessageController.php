@@ -8,6 +8,7 @@ use App\Http\Requests\CreateMessageRequest;
 use App\Http\Resources\MessageResource;
 use App\Models\Application;
 use App\Models\Message;
+use App\Models\Service;
 use App\Services\ServiceMatcher;
 use App\Services\SignalImport;
 use Illuminate\Support\Carbon;
@@ -25,14 +26,12 @@ class MessageController extends Controller
         $this->setup = $setup;
     }
     
-    public function store(CreateMessageRequest $request, Application $origin, Application $destination, string $slug)
-    {
-        $service = $this->setup->findServiceFor(
-            $origin,
-            $destination,
-            $slug
-        );
-        
+    public function store(
+        CreateMessageRequest $request,
+        Application $origin,
+        Application $destination,
+        Service $service
+    ) {
         $chain = $request->input('chain');
         
         if ($service->is_sync && $chain) {

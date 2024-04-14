@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\ServiceMatcher;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -35,6 +36,25 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
+        });
+        
+        $this->registerModelBindings();
+    }
+    
+    protected function registerModelBindings(): void
+    {
+        Route::bind('service', function ($value, \Illuminate\Routing\Route $route) {
+            $setup = app(ServiceMatcher::class);
+            
+            if (is_numeric($value)) {
+                return $setup->findServiceById($value);
+            }
+            
+            return $setup->findServiceFor(
+                $route->parameter('origin'),
+                $route->parameter('destination'),
+                $value
+            );
         });
     }
 }

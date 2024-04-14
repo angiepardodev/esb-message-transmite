@@ -7,8 +7,13 @@ use App\Models\Service;
 
 class ServiceMatcher
 {
-    public function findServiceFor(Application $origin, Application $destination, string $slug): Service
+    public function findServiceById(int $id): Service
     {
-        return Service::forIndex($origin->id, $destination->id, $slug)->firstOrFail();
+        return Service::findOrFail($id);
+    }
+    
+    public function findServiceFor(string|Application $origin, string|Application $destination, string $slug): Service
+    {
+        return Service::forIndex(to_key($origin), to_key($destination), $slug)->firstOrFail();
     }
 }
