@@ -7,6 +7,7 @@ use App\Casts\SignalCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Message extends Model
@@ -29,6 +30,11 @@ class Message extends Model
         'signal' => SignalCast::class,
         'chain'  => ChainCast::class,
     ];
+    
+    public function depends(): HasMany
+    {
+        return $this->hasMany(MessageDepend::class);
+    }
     
     public function service(): BelongsTo
     {

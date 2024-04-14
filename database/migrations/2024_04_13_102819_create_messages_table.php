@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->json('signal');
             $table->string('chain_tenant')->nullable();
             $table->string('chain_ref')->nullable();
+            $table->timestamp('enqueued_at')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
