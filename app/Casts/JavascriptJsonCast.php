@@ -2,12 +2,22 @@
 
 namespace App\Casts;
 
+use App\Parsers\JsonParser;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\MissingValue;
+use Illuminate\Support\Facades\App;
 
-class JsonWithMissing implements CastsAttributes
+class JavascriptJsonCast implements CastsAttributes
 {
+    
+    protected JsonParser $parser;
+    
+    public function __construct()
+    {
+        $this->parser = App::make(JsonParser::class);
+    }
+    
     /**
      * Cast the given value.
      *
@@ -15,7 +25,7 @@ class JsonWithMissing implements CastsAttributes
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): mixed
     {
-        return $value === 'undefined' ? new MissingValue() : json_decode($value);
+        return $this->parser->from($value);
     }
 
     /**
@@ -25,6 +35,6 @@ class JsonWithMissing implements CastsAttributes
      */
     public function set(Model $model, string $key, mixed $value, array $attributes): string
     {
-        return $value instanceof MissingValue ? 'undefined' : json_encode($value);
+        return $this->parser->to($value);
     }
 }

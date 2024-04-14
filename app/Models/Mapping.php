@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Casts\JsonWithMissing;
+use App\Casts\JavascriptJsonCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,8 +11,8 @@ class Mapping extends Model
     use HasFactory;
     
     protected $casts = [
-        'source_data' => JsonWithMissing::class,
-        'mapped_data' => JsonWithMissing::class,
+        'source_data' => JavascriptJsonCast::class,
+        'mapped_data' => JavascriptJsonCast::class,
     ];
     
     protected $fillable = [
