@@ -5,7 +5,6 @@ namespace App\Casts;
 use App\Parsers\JsonParser;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Resources\MissingValue;
 use Illuminate\Support\Facades\App;
 
 class JavascriptJsonCast implements CastsAttributes
@@ -27,7 +26,7 @@ class JavascriptJsonCast implements CastsAttributes
     {
         return $this->parser->from($value);
     }
-
+    
     /**
      * Prepare the given value for storage.
      *
