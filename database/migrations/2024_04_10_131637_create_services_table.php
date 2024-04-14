@@ -14,8 +14,8 @@ return new class extends Migration {
             $table->string('slug');
             $table->jsonb('endpoint_parameters')->comment('url, headers, and metadata for the fetch endpoint');
             $table->jsonb('callback_parameters')->comment('url, headers, and metadata for the fetch callback');
-            $table->foreignIdFor(Application::class, 'application_origin_id');
-            $table->foreignIdFor(Application::class, 'application_destination_id');
+            $table->foreignUlid('application_origin_id');
+            $table->foreignUlid('application_destination_id');
             $table->timestamps();
             $table->softDeletes();
             
