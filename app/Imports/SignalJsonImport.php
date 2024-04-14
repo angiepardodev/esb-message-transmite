@@ -10,6 +10,6 @@ class SignalJsonImport implements SignalFormatImport
     public function import(string $data): Signal
     {
         $parsed = json_decode($data, true);
-        return new Signal($data, $parsed, 'json');
+        return new Signal($data, $parsed ?? [], 'json');
     }
 }
