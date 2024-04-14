@@ -5,5 +5,5 @@ namespace App\Contracts;
 interface Checker
 {
     
-    public function check($input);
+    public function check($input): bool;
 }
