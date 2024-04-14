@@ -69,11 +69,8 @@ class MessageController extends Controller
         }
         
         if ($service->is_sync) {
-            $message->signal = $this->composer->processThrough(
-                $message->signal,
-                $message->service
-            );
-            $message->completed_at = Carbon::now();
+            $message = $this->composer->processThrough($message);
+            
         }
         
         $message->save();

@@ -2,13 +2,17 @@
 
 namespace App\Core;
 
-use App\Models\Service;
+use App\Models\Message;
 use Illuminate\Http\Resources\MissingValue;
+use Illuminate\Support\Carbon;
 
 class Composer
 {
-    public function processThrough(Signal $source, Service $service): Signal
+    public function processThrough(Message $message): Message
     {
+        $service = $message->service;
+        $source = $message->signal;
+        
         $transformations = $service->transformations()->get();
         
         $target = [];
@@ -29,7 +33,11 @@ class Composer
         
         $this->removeMissingValuesRecursively($target);
         
-        return $source->setParsed($target);
+        $message->signal = $source->setParsed($target);
+        $message->completed_at = Carbon::now();
+        $message->save();
+        
+        return $message;
     }
     
     protected function removeMissingValuesRecursively(array &$array): void
