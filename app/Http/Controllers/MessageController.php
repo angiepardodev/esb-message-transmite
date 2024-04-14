@@ -3,21 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Core\Chain;
+use App\Core\Composer;
 use App\Http\Requests\CreateMessageRequest;
 use App\Http\Resources\MessageResource;
 use App\Models\Application;
 use App\Models\Message;
 use App\Services\ServiceMatcher;
 use App\Services\SignalImport;
+use Illuminate\Support\Carbon;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class MessageController extends Controller
 {
     
     protected ServiceMatcher $setup;
+    protected Composer $composer;
     
-    public function __construct(ServiceMatcher $setup)
+    public function __construct(Composer $composer, ServiceMatcher $setup)
     {
+        $this->composer = $composer;
         $this->setup = $setup;
     }
     
@@ -63,6 +67,14 @@ class MessageController extends Controller
             if (!$tenant->is_chain_sharing_allowed) {
                 throw new ConflictHttpException("$tenant->id don't allow use your chain");
             }
+        }
+        
+        if ($service->is_sync) {
+            $message->signal = $this->composer->processThrough(
+                $message->signal,
+                $message->service
+            );
+            $message->completed_at = Carbon::now();
         }
         
         $message->save();

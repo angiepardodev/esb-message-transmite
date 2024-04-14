@@ -9,7 +9,7 @@ class CreateMessageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'raw'                    => 'required|string',
+            'raw'                    => 'required',
             'chain'                  => 'array',
             'chain.ref'              => 'string',
             'chain.depends'          => 'array',
