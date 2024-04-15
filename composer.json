@@ -1,8 +1,8 @@
 {
-    "name": "laravel/laravel",
+    "name": "nekoos/esb-message-transmute",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "A robust ESB tool for dynamic message transformation and mapping, designed to seamlessly convert and enrich data flows across disparate enterprise systems.",
+    "keywords": ["esb", "message", "transmute", "mapping", "transform"],
     "license": "MIT",
     "require": {
         "php": "^8.1",
